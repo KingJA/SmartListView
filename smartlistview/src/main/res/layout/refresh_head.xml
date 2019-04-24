@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp">
+
+
+        <LinearLayout
+            android:id="@+id/tipLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_tip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="下拉刷新"/>
+
+            <TextView
+                android:id="@+id/tv_lastRefreshTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="上次更新时间"/>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/iv_arrow"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="12dp"
+            android:layout_toLeftOf="@id/tipLayout"
+            android:background="@drawable/ic_arrow"/>
+
+        <ProgressBar
+            android:id="@+id/pb"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginRight="12dp"
+            android:layout_toLeftOf="@id/tipLayout"
+            android:visibility="gone"/>
+
+
+    </RelativeLayout>
+
+
+</LinearLayout>
