@@ -1,10 +1,8 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion 28
-
-
-
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 28
@@ -24,4 +22,16 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+publish {
+    artifactId = 'smartlistview'
+    userOrg = 'kingja'
+    groupId = 'com.kingja.smartlistview'
+    publishVersion = '1.0.0'
+    desc = 'smart listview'
+    website = 'https://github.com/KingJA/SmartListView'
+}
+tasks.withType(JavaCompile){
+    options.encoding = "UTF-8"
 }

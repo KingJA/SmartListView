@@ -2,7 +2,6 @@ package com.kingja.smartlistview;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,13 +28,13 @@ public class SmartListView extends ListView implements AbsListView.OnScrollListe
     private static final String TAG = "SmartListView";
     private View headView;
     private int firstVisibleItem;
-    private boolean isRemark;//最顶端开始往下拉
-    private int startY;//按下时的Y坐标
-    private int state;//当前状态
-    private final int NONE = 0;//正常状态
-    private final int PULL = 1;//提示下拉刷新
-    private final int RELESE = 2;//提示释放状态
-    private final int REFRASHING = 3;//刷新状态
+    private boolean isRemark;
+    private int startY;
+    private int state;
+    private final int NONE = 0;
+    private final int PULL = 1;
+    private final int RELESE = 2;
+    private final int REFRASHING = 3;
     private int headHeight;
     private int scrollState;
     private OnRefreshListener onRefreshListener;
@@ -55,14 +54,10 @@ public class SmartListView extends ListView implements AbsListView.OnScrollListe
 
     private void initSmartListView(Context context, AttributeSet attrs) {
         headView = View.inflate(context, R.layout.refresh_head, null);
-        //测量头部高度
         measureView(headView);
         headHeight = headView.getMeasuredHeight();
-        //隐藏头部
         topPadding(-headHeight);
-        //添加刷新头
         addHeaderView(headView);
-        //监听滚动
         setOnScrollListener(this);
     }
 
@@ -70,12 +65,6 @@ public class SmartListView extends ListView implements AbsListView.OnScrollListe
         headView.setPadding(headView.getPaddingLeft(), paddingTop, headView.getPaddingRight(), headView
                 .getPaddingBottom());
     }
-
-    /**
-     * 1.加刷新头
-     * 2.隐藏刷新头
-     * 3.拉倒顶部时候监听滑动
-     */
 
     private void measureView(View view) {
         ViewGroup.LayoutParams p = view.getLayoutParams();
@@ -119,7 +108,6 @@ public class SmartListView extends ListView implements AbsListView.OnScrollListe
             case MotionEvent.ACTION_UP:
                 if (state == RELESE) {
                     state = REFRASHING;
-                    //加载最新数据
                     refreshViewByState();
                     if (onRefreshListener != null) {
                         onRefreshListener.onRefresh();
@@ -191,14 +179,14 @@ public class SmartListView extends ListView implements AbsListView.OnScrollListe
             case PULL:
                 ivArrow.setVisibility(View.VISIBLE);
                 pb.setVisibility(View.GONE);
-                tvTip.setText("下拉刷新");
+                tvTip.setText(R.string.pulltorefresh);
                 ivArrow.clearAnimation();
                 ivArrow.setAnimation(downRotate);
                 break;
             case RELESE:
                 ivArrow.setVisibility(View.VISIBLE);
                 pb.setVisibility(View.GONE);
-                tvTip.setText("释放刷新");
+                tvTip.setText(R.string.releserefresh);
                 ivArrow.clearAnimation();
                 ivArrow.setAnimation(upRotate);
                 break;
@@ -206,18 +194,19 @@ public class SmartListView extends ListView implements AbsListView.OnScrollListe
                 topPadding(0);
                 ivArrow.setVisibility(View.GONE);
                 pb.setVisibility(View.VISIBLE);
-                tvTip.setText("正在刷新");
+                tvTip.setText(R.string.refreshing);
                 ivArrow.clearAnimation();
                 break;
         }
     }
 
     public void refreshComplete() {
+
         state = NONE;
         isRemark = false;
         refreshViewByState();
         TextView tvLastRefreshTime = headView.findViewById(R.id.tv_lastRefreshTime);
-        SimpleDateFormat format = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
+        SimpleDateFormat format = new SimpleDateFormat(getContext().getString(R.string.dateformat));
         Date date = new Date(System.currentTimeMillis());
         String time = format.format(date);
         tvLastRefreshTime.setText(time);

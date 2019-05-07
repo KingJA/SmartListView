@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">smartlistview</string>
+    <string name="pulltorefresh">下拉刷新</string>
+    <string name="releserefresh">释放刷新</string>
+    <string name="refreshing">正在刷新</string>
+    <string name="dateformat">yyyy年MM月dd日 HH:mm:ss</string>
 </resources>
