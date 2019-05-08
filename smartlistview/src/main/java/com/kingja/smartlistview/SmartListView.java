@@ -206,6 +206,11 @@ public class SmartListView extends ListView implements AbsListView.OnScrollListe
                 ivArrow.setVisibility(View.GONE);
                 pb.setVisibility(View.VISIBLE);
                 tvTip.setText(R.string.refreshing);
+                TextView tvLastRefreshTime = headView.findViewById(R.id.tv_lastRefreshTime);
+                SimpleDateFormat format = new SimpleDateFormat(getContext().getString(R.string.dateformat));
+                Date date = new Date(System.currentTimeMillis());
+                String time = format.format(date);
+                tvLastRefreshTime.setText(time);
                 ivArrow.clearAnimation();
                 break;
         }
@@ -215,11 +220,6 @@ public class SmartListView extends ListView implements AbsListView.OnScrollListe
         state = NONE;
         isRemark = false;
         refreshViewByState();
-        TextView tvLastRefreshTime = headView.findViewById(R.id.tv_lastRefreshTime);
-        SimpleDateFormat format = new SimpleDateFormat(getContext().getString(R.string.dateformat));
-        Date date = new Date(System.currentTimeMillis());
-        String time = format.format(date);
-        tvLastRefreshTime.setText(time);
         smoothScrollHeadView(0,-headHeight);
     }
 
@@ -234,7 +234,7 @@ public class SmartListView extends ListView implements AbsListView.OnScrollListe
     private void smoothScrollHeadView(int startMoveY,int endMoveY) {
         Log.e(TAG, "moveY: " + startMoveY);
         ValueAnimator valueAnimator = ValueAnimator.ofInt(startMoveY, endMoveY)
-                .setDuration((long) ((headHeight + startMoveY) / speed));
+                .setDuration((long) ((Math.abs(startMoveY) + Math.abs(endMoveY)) / speed));
         valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
