@@ -184,8 +184,6 @@ public class SmartListView extends ListView implements AbsListView.OnScrollListe
         switch (state) {
             case NONE:
                 ivArrow.clearAnimation();
-//                topPadding(-headHeight);
-
                 break;
             case PULL:
                 ivArrow.setVisibility(View.VISIBLE);
@@ -202,7 +200,6 @@ public class SmartListView extends ListView implements AbsListView.OnScrollListe
                 ivArrow.setAnimation(upRotate);
                 break;
             case REFRASHING:
-//                topPadding(0);
                 ivArrow.setVisibility(View.GONE);
                 pb.setVisibility(View.VISIBLE);
                 tvTip.setText(R.string.refreshing);
