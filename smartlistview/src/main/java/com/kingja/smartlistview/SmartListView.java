@@ -40,7 +40,6 @@ public class SmartListView extends ListView implements AbsListView.OnScrollListe
     private int headHeight;
     private int scrollState;
     private OnRefreshListener onRefreshListener;
-    private int moveY;
     private float speed;
 
     public SmartListView(Context context) {
@@ -113,24 +112,26 @@ public class SmartListView extends ListView implements AbsListView.OnScrollListe
                 break;
             case MotionEvent.ACTION_UP:
                 int endY = (int) ev.getY();
-                moveY = endY - startY;
+                int moveY = endY - startY;
                 if (state == RELESE) {
                     state = REFRASHING;
                     refreshViewByState();
                     if (onRefreshListener != null) {
                         onRefreshListener.onRefresh();
-                        smoothScrollHeadView(-headHeight+moveY,0);
+                        smoothScrollHeadView(-headHeight + moveY, 0);
                     }
                 } else if (state == PULL) {
                     state = NONE;
                     isRemark = false;
                     refreshViewByState();
-                    smoothScrollHeadView(-headHeight+moveY,-headHeight);
+                    smoothScrollHeadView(-headHeight + moveY, -headHeight);
                 }
                 break;
         }
         return super.onTouchEvent(ev);
     }
+
+    private final int MIN_MOVE_DISTANCE = 30;
 
     private void onMove(MotionEvent ev) {
         if (!isRemark) {
@@ -148,14 +149,14 @@ public class SmartListView extends ListView implements AbsListView.OnScrollListe
                 break;
             case PULL:
                 topPadding(topPadding);
-                if (space > headHeight + 30 && scrollState == SCROLL_STATE_TOUCH_SCROLL) {
+                if (space > headHeight + MIN_MOVE_DISTANCE && scrollState == SCROLL_STATE_TOUCH_SCROLL) {
                     state = RELESE;
                     refreshViewByState();
                 }
                 break;
             case RELESE:
                 topPadding(topPadding);
-                if (space < headHeight + 30) {
+                if (space < headHeight + MIN_MOVE_DISTANCE) {
                     state = PULL;
                     refreshViewByState();
                 } else if (space <= 0) {
@@ -217,7 +218,7 @@ public class SmartListView extends ListView implements AbsListView.OnScrollListe
         state = NONE;
         isRemark = false;
         refreshViewByState();
-        smoothScrollHeadView(0,-headHeight);
+        smoothScrollHeadView(0, -headHeight);
     }
 
     public interface OnRefreshListener {
@@ -228,7 +229,7 @@ public class SmartListView extends ListView implements AbsListView.OnScrollListe
         this.onRefreshListener = onRefreshListener;
     }
 
-    private void smoothScrollHeadView(int startMoveY,int endMoveY) {
+    private void smoothScrollHeadView(int startMoveY, int endMoveY) {
         Log.e(TAG, "moveY: " + startMoveY);
         ValueAnimator valueAnimator = ValueAnimator.ofInt(startMoveY, endMoveY)
                 .setDuration((long) ((Math.abs(startMoveY) + Math.abs(endMoveY)) / speed));
