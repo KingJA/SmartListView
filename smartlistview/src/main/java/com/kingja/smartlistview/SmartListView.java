@@ -1,7 +1,9 @@
 package com.kingja.smartlistview;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +40,8 @@ public class SmartListView extends ListView implements AbsListView.OnScrollListe
     private int headHeight;
     private int scrollState;
     private OnRefreshListener onRefreshListener;
+    private int moveY;
+    private float speed;
 
     public SmartListView(Context context) {
         this(context, null);
@@ -56,9 +60,11 @@ public class SmartListView extends ListView implements AbsListView.OnScrollListe
         headView = View.inflate(context, R.layout.refresh_head, null);
         measureView(headView);
         headHeight = headView.getMeasuredHeight();
+        Log.e(TAG, "headHeight: " + headHeight);
         topPadding(-headHeight);
         addHeaderView(headView);
         setOnScrollListener(this);
+        speed = headHeight / 150f;
     }
 
     private void topPadding(int paddingTop) {
@@ -106,16 +112,20 @@ public class SmartListView extends ListView implements AbsListView.OnScrollListe
                 onMove(ev);
                 break;
             case MotionEvent.ACTION_UP:
+                int endY = (int) ev.getY();
+                moveY = endY - startY;
                 if (state == RELESE) {
                     state = REFRASHING;
                     refreshViewByState();
                     if (onRefreshListener != null) {
                         onRefreshListener.onRefresh();
+                        smoothScrollHeadView(-headHeight+moveY,0);
                     }
                 } else if (state == PULL) {
                     state = NONE;
                     isRemark = false;
                     refreshViewByState();
+                    smoothScrollHeadView(-headHeight+moveY,-headHeight);
                 }
                 break;
         }
@@ -174,7 +184,8 @@ public class SmartListView extends ListView implements AbsListView.OnScrollListe
         switch (state) {
             case NONE:
                 ivArrow.clearAnimation();
-                topPadding(-headHeight);
+//                topPadding(-headHeight);
+
                 break;
             case PULL:
                 ivArrow.setVisibility(View.VISIBLE);
@@ -191,7 +202,7 @@ public class SmartListView extends ListView implements AbsListView.OnScrollListe
                 ivArrow.setAnimation(upRotate);
                 break;
             case REFRASHING:
-                topPadding(0);
+//                topPadding(0);
                 ivArrow.setVisibility(View.GONE);
                 pb.setVisibility(View.VISIBLE);
                 tvTip.setText(R.string.refreshing);
@@ -201,7 +212,6 @@ public class SmartListView extends ListView implements AbsListView.OnScrollListe
     }
 
     public void refreshComplete() {
-
         state = NONE;
         isRemark = false;
         refreshViewByState();
@@ -210,6 +220,7 @@ public class SmartListView extends ListView implements AbsListView.OnScrollListe
         Date date = new Date(System.currentTimeMillis());
         String time = format.format(date);
         tvLastRefreshTime.setText(time);
+        smoothScrollHeadView(0,-headHeight);
     }
 
     public interface OnRefreshListener {
@@ -219,4 +230,20 @@ public class SmartListView extends ListView implements AbsListView.OnScrollListe
     public void setOnRefreshListener(OnRefreshListener onRefreshListener) {
         this.onRefreshListener = onRefreshListener;
     }
+
+    private void smoothScrollHeadView(int startMoveY,int endMoveY) {
+        Log.e(TAG, "moveY: " + startMoveY);
+        ValueAnimator valueAnimator = ValueAnimator.ofInt(startMoveY, endMoveY)
+                .setDuration((long) ((headHeight + startMoveY) / speed));
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                int paddingTop = (int) animation.getAnimatedValue();
+                Log.e(TAG, "paddingTop: " + paddingTop);
+                topPadding(paddingTop);
+            }
+        });
+        valueAnimator.start();
+    }
+
 }
