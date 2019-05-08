@@ -118,13 +118,17 @@ public class SmartListView extends ListView implements AbsListView.OnScrollListe
                     refreshViewByState();
                     if (onRefreshListener != null) {
                         onRefreshListener.onRefresh();
-                        smoothScrollHeadView(-headHeight + moveY, 0);
+//                        smoothScrollHeadView(-headHeight + moveY, 0);
+                        smoothScrollHeadView(headView.getPaddingTop(), 0);
+                        Log.e(TAG, "onTouchEvent: REFRASHING" );
                     }
                 } else if (state == PULL) {
+                    Log.e(TAG, "onTouchEvent: PULL" );
                     state = NONE;
                     isRemark = false;
                     refreshViewByState();
-                    smoothScrollHeadView(-headHeight + moveY, -headHeight);
+//                    smoothScrollHeadView(-headHeight + moveY, -headHeight);
+                    smoothScrollHeadView(headView.getPaddingTop(), -headHeight);
                 }
                 break;
         }
@@ -140,6 +144,7 @@ public class SmartListView extends ListView implements AbsListView.OnScrollListe
         int tempY = (int) ev.getY();
         int space = tempY - startY;
         int topPadding = space - headHeight;
+        Log.e(TAG, "space: " + space);
         switch (state) {
             case NONE:
                 if (space > 0) {
@@ -149,6 +154,7 @@ public class SmartListView extends ListView implements AbsListView.OnScrollListe
                 break;
             case PULL:
                 topPadding(topPadding);
+
                 if (space > headHeight + MIN_MOVE_DISTANCE && scrollState == SCROLL_STATE_TOUCH_SCROLL) {
                     state = RELESE;
                     refreshViewByState();
@@ -176,11 +182,11 @@ public class SmartListView extends ListView implements AbsListView.OnScrollListe
         ProgressBar pb = headView.findViewById(R.id.pb);
         RotateAnimation upRotate = new RotateAnimation(0, 180, Animation.RELATIVE_TO_SELF, 0.5f, Animation
                 .RELATIVE_TO_SELF, 0.5f);
-        upRotate.setDuration(500);
+        upRotate.setDuration(300);
         upRotate.setFillAfter(true);
         RotateAnimation downRotate = new RotateAnimation(180, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation
                 .RELATIVE_TO_SELF, 0.5f);
-        downRotate.setDuration(500);
+        downRotate.setDuration(300);
         downRotate.setFillAfter(true);
         switch (state) {
             case NONE:
